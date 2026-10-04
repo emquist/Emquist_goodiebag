@@ -1,0 +1,28 @@
+############################################################
+# Lights_2_Calibrate.ssf
+#
+# Calibrates the lights with the master dark and master flat,
+# applies cosmetic correction and debayers to colour.
+#
+# Run from the target's working directory. Requires:
+#   process/light_.seq       (from Lights_1_Convert.ssf)
+#   master/master_dark.fit   (from Master_Dark.ssf)
+#   master/master_flat.fit   (from Master_Flat.ssf)
+#
+# Output:
+#   process/pp_light_*.fit  +  process/pp_light_.seq
+#
+# Options:
+#   -cc=dark        hot/cold pixel correction using the master dark
+#   -cfa            images are raw colour (Bayer) data
+#   -equalize_cfa   balances the colour channels of the flat
+#   -debayer        converts to full RGB after calibration
+############################################################
+
+requires 1.2.0
+
+cd process
+calibrate light -dark=../master/master_dark -flat=../master/master_flat -cc=dark -cfa -equalize_cfa -debayer
+
+cd ..
+close

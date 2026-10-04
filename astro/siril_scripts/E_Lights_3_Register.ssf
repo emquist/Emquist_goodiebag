@@ -1,0 +1,26 @@
+############################################################
+# Lights_3_Register.ssf
+#
+# Aligns the calibrated lights on their stars.
+#
+# Run from the target's working directory. Requires in process/:
+#   pp_light_.seq          (from Lights_2_Calibrate.ssf)
+#
+# Output:
+#   process/r_pp_light_*.fit  +  process/r_pp_light_.seq
+#
+# register -2pass   computes alignment in two passes and picks the
+#                   best reference frame automatically
+# seqapplyreg       writes the aligned frames
+#   -framing=min    crop to the area common to all frames
+#                   (use -framing=max to keep the full field)
+############################################################
+
+requires 1.2.0
+
+cd process
+register pp_light -2pass
+seqapplyreg pp_light -framing=min
+
+cd ..
+close

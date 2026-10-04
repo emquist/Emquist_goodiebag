@@ -1,0 +1,26 @@
+############################################################
+# Lights_4_Stack.ssf
+#
+# Stacks the aligned lights into one image.
+#
+# Run from the target's working directory. Requires in process/:
+#   r_pp_light_.seq        (from Lights_3_Register.ssf)
+#
+# Output:
+#   process/result.fit
+#
+# Options:
+#   rej 3 3         sigma-clipping rejection, low 3 / high 3
+#                   (removes satellites, planes, hot pixels)
+#   -norm=addscale  additive + scale normalisation between frames
+#   -output_norm    normalises the final image to [0,1]
+#   -rgb_equal      equalises the R, G and B backgrounds
+############################################################
+
+requires 1.2.0
+
+cd process
+stack r_pp_light rej 3 3 -norm=addscale -output_norm -rgb_equal -out=result
+
+cd ..
+close

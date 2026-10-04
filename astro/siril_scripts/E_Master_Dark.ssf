@@ -1,0 +1,29 @@
+############################################################
+# Master_Dark.ssf
+#
+# Builds a master dark from raw dark frames.
+#
+# Run from the target's working directory, which must contain:
+#   darks/    raw dark frames (same exposure, gain, offset and
+#             sensor temperature as the lights)
+#
+# Output:
+#   master/master_dark.fit   (master/ is created if missing)
+#
+# No bias subtraction: the master dark keeps the bias signal,
+# so lights are later calibrated with the dark alone.
+############################################################
+
+requires 1.2.0
+
+# Convert raw dark frames into a Siril sequence "dark_" in process/
+cd darks
+convert dark -out=../process
+cd ../process
+
+# Stack: sigma-clipping rejection (3/3), no normalisation
+# (dark current must be preserved as-is)
+stack dark rej 3 3 -nonorm -out=../master/master_dark
+
+cd ..
+close

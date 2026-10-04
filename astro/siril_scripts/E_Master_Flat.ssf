@@ -1,0 +1,30 @@
+############################################################
+# Master_Flat.ssf
+#
+# Builds a bias-calibrated master flat from raw flat frames.
+#
+# Run from the target's working directory, which must contain:
+#   flats/    raw flat frames
+#   master/master_bias.fit   (from Master_Bias.ssf)
+#
+# Output:
+#   master/master_flat.fit
+############################################################
+
+requires 1.2.0
+
+# Convert raw flat frames into a Siril sequence "flat_" in process/
+cd flats
+convert flat -out=../process
+cd ../process
+
+# Subtract the master bias from every flat -> sequence "pp_flat_"
+# (fails here if master_bias.fit is missing: run Master_Bias.ssf first)
+calibrate flat -bias=../master/master_bias
+
+# Stack: sigma-clipping rejection (3/3), multiplicative normalisation
+# so flats with slightly different brightness combine correctly
+stack pp_flat rej 3 3 -norm=mul -out=../master/master_flat
+
+cd ..
+close
