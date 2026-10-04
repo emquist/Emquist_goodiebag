@@ -1,0 +1,69 @@
+############################################################
+# HaOIII_Combine_Nights.ssf
+#
+# Stacks the per-night Ha and OIII results from Siril's
+# OSC_Extract_HaOIII.ssf into one Ha and one OIII image,
+# weighting each night by how many subs went into it.
+#
+# Run from a new working directory, which must contain:
+#   ha/     result_Ha_*.fit    (one per night)
+#   oiii/   result_OIII_*.fit  (one per night)
+#
+# Rename the files so they sort in the same night order in both
+# folders, e.g. n1_result_Ha_17820s.fit / n1_result_OIII_18000s.fit.
+# The FIRST file in each folder is the alignment reference, so put
+# your best night first. Ha and OIII must use the same night.
+#
+# Output (in the working directory):
+#   result_Ha_<seconds>s.fit
+#   result_OIII_<seconds>s.fit
+#
+# Weighting:
+#   -weight=nbstack  weights each night by its STACKCNT header
+#                    (number of subs stacked). With equal sub
+#                    length this equals weighting by exposure time,
+#                    which is the SNR-optimal weight when nights are
+#                    of similar quality. If sub length differs
+#                    between nights, or one night was much worse
+#                    (moon, haze), use -weight=noise instead.
+#
+# Rejection:
+#   rej none         sigma clipping needs many frames; with a few
+#                    nights it does nothing useful or removes real
+#                    signal. With 5+ nights, try "rej w 3 3".
+#
+# Alignment:
+#   register         uses the first image (night 1) as reference
+#                    for both Ha and OIII, so both channels land on
+#                    the same pixel grid (OSC_Extract_HaOIII already
+#                    aligned Ha and OIII within each night). Areas
+#                    not covered by every night get weak edges: crop.
+############################################################
+
+requires 1.3.4
+
+# --- Ha ---
+cd ha
+link ha -out=../process
+cd ../process
+register ha
+stack r_ha rej none -norm=addscale -weight=nbstack -output_norm -32b -out=stack_Ha
+cd ..
+
+# --- OIII ---
+cd oiii
+link oiii -out=../process
+cd ../process
+register oiii
+stack r_oiii rej none -norm=addscale -weight=nbstack -output_norm -32b -out=stack_OIII
+cd ..
+
+# Save with total integration time, like the per-night results
+cd process
+load stack_Ha
+save ../result_Ha_$LIVETIME:%d$s
+load stack_OIII
+save ../result_OIII_$LIVETIME:%d$s
+cd ..
+
+close
