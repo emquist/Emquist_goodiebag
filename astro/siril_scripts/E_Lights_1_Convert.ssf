@@ -1,0 +1,26 @@
+############################################################
+# Lights_1_Convert.ssf
+#
+# Converts raw light frames into a Siril sequence.
+#
+# Run from the target's working directory, which must contain:
+#   lights/   raw light frames (FITS from KStars/Ekos/INDI)
+#
+# Output:
+#   process/light_*.fit  +  process/light_.seq
+#
+# ONE-TIME CHECK BEFORE FIRST USE:
+#   Open one raw light in Siril and check the FITS header for
+#     ROWORDER = 'TOP-DOWN'
+#     BAYERPAT = 'RGGB'
+#   If ROWORDER is missing, update INDI or set the Bayer pattern
+#   manually in Preferences -> Debayer, or colours will be wrong.
+############################################################
+
+requires 1.2.0
+
+cd lights
+convert light -out=../process
+
+cd ..
+close

@@ -1,0 +1,28 @@
+############################################################
+# Lights_5_Finish.ssf
+#
+# Flips the stacked image to standard FITS row order and saves
+# the final result with the total integration time in its name.
+#
+# Run from the target's working directory. Requires:
+#   process/result.fit     (from Lights_4_Stack.ssf)
+#
+# Output:
+#   result_<seconds>s.fit  in the working directory
+#
+# mirrorx -bottomup   flips only if the image is top-down.
+#                     INDI/KStars writes top-down files, so this
+#                     makes the result display the right way up in
+#                     GraXpert and other software. Harmless if the
+#                     image is already bottom-up.
+############################################################
+
+requires 1.2.0
+
+cd process
+load result
+mirrorx -bottomup
+save ../result_$LIVETIME:%d$s
+
+cd ..
+close

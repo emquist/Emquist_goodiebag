@@ -1,0 +1,27 @@
+############################################################
+# Master_Bias.ssf
+#
+# Builds a master bias from raw bias frames.
+#
+# Run from the target's working directory, which must contain:
+#   biases/   raw bias frames
+#
+# Output:
+#   master/master_bias.fit   (master/ is created if missing)
+#
+# Run this BEFORE Master_Flat.ssf (flats are calibrated with it).
+############################################################
+
+requires 1.2.0
+
+# Convert raw bias frames into a Siril sequence "bias_" in process/
+cd biases
+convert bias -out=../process
+cd ../process
+
+# Stack: sigma-clipping rejection (low 3, high 3), no normalisation
+# (bias frames are pure offset; normalising them would be wrong)
+stack bias rej 3 3 -nonorm -out=../master/master_bias
+
+cd ..
+close
